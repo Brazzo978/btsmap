@@ -358,10 +358,8 @@
             <input type="email" id="newEmail" required />
             <label for="newEmail">Email</label>
           </div>
-          <div class="input-field col s12 m6">
-            <i class="material-icons prefix">lock</i>
-            <input type="password" id="newPassword" required />
-            <label for="newPassword">Password</label>
+          <div class="col s12 m6">
+            <p>Una password temporanea verrà inviata via email.</p>
           </div>
           <div class="input-field col s12 m6">
             <i class="material-icons prefix">security</i>
@@ -487,7 +485,6 @@ document.getElementById('userForm').addEventListener('submit', e => {
   const data = {
     username: document.getElementById('newUsername').value,
     email: document.getElementById('newEmail').value,
-    password: document.getElementById('newPassword').value,
     role: document.getElementById('newRole').value
   };
   fetch('/users', { method: 'POST', headers: tokenHeader(), body: JSON.stringify(data) })
