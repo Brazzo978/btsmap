@@ -505,6 +505,7 @@ document.getElementById('cancelModal').addEventListener('click', () => {
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
+  const token = localStorage.getItem('token');
   const id = document.getElementById('markerId').value;
   const selected = Array.from(
     document.querySelectorAll('#markerTags input[type="checkbox"]:checked')
@@ -539,11 +540,17 @@ form.addEventListener('submit', (e) => {
       ? currentEditMarker.images.slice()
       : [],
   };
+  const payload = token ? parseJwt(token) : null;
   if (id) {
     marker.id = Number(id);
     if (currentEditMarker && currentEditMarker.localita) {
       marker.localita = currentEditMarker.localita;
     }
+    if (currentEditMarker && currentEditMarker.autore) {
+      marker.autore = currentEditMarker.autore;
+    }
+  } else if (payload && payload.username) {
+    marker.autore = payload.username;
   }
   const files = document.getElementById('markerImages').files;
   if (marker.images.length + files.length > 10) {
@@ -556,7 +563,7 @@ form.addEventListener('submit', (e) => {
     method,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + localStorage.getItem('token'),
+      Authorization: 'Bearer ' + token,
     },
     body: JSON.stringify(marker),
   })
@@ -569,7 +576,6 @@ form.addEventListener('submit', (e) => {
     .then((data) => {
       marker.id = id ? Number(id) : data.id;
       marker.localita = data.localita || marker.localita || null;
-      const token = localStorage.getItem('token');
       const uploads = Array.from(files).map((file) => {
         const fd = new FormData();
         fd.append('image', file);
