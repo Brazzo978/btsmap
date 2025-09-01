@@ -422,11 +422,29 @@ if (markerTagContainer) {
 }
 
 function applyTagFilter() {
-  const selected = tagFilter
-    ? Array.from(tagFilter.selectedOptions)
-        .map((o) => o.value)
-        .filter(Boolean)
-    : [];
+  if (!tagFilter) return;
+
+  const options = Array.from(tagFilter.options);
+  let selectedValues = Array.from(tagFilter.selectedOptions).map(
+    (o) => o.value
+  );
+
+  if (
+    selectedValues.length === 0 ||
+    selectedValues.includes("") ||
+    selectedValues.length === options.length - 1
+  ) {
+    options.forEach((opt, idx) => (opt.selected = idx === 0));
+    selectedValues = [];
+  } else {
+    options[0].selected = false;
+  }
+
+  if (window.M && M.FormSelect) {
+    M.FormSelect.init(tagFilter, { dropdownOptions: { closeOnClick: false } });
+  }
+
+  const selected = selectedValues.filter(Boolean);
   Object.values(markersById).forEach(({ data, marker }) => {
     if (
       selected.length === 0 ||
