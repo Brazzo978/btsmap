@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Benvenuto - BTSMAP</title>
+</head>
+<body>
+  <h1>Benvenuto su BTSMAP</h1>
+  <p>Il tuo account è stato creato. Usa le seguenti credenziali per accedere:</p>
+  <ul>
+    <li><strong>Username:</strong> <span id="username"></span></li>
+    <li><strong>Password:</strong> <span id="password"></span></li>
+  </ul>
+  <p><a href="index.html">Vai alla pagina di login</a></p>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById('username').textContent = params.get('u') || '';
+    document.getElementById('password').textContent = params.get('p') || '';
+  </script>
+</body>
+</html>

@@ -46,6 +46,10 @@ app.get('/admin', authenticateToken, authorizeRole('admin'), (req, res) => {
   res.sendFile(path.join(frontendPath, 'admin.html'));
 });
 
+app.get('/welcome', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'welcome.html'));
+});
+
 async function ensureAdmin() {
   const { username, password, email } = config.admin;
   db.get('SELECT id FROM users WHERE username = ?', [username], async (err, row) => {
