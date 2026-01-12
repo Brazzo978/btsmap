@@ -195,7 +195,8 @@ router.post(
   authorizeRoles('admin', 'editor'),
   validateMarkerInput,
   async (req, res, next) => {
-    const { lat, lng, descrizione, images, nome, autore, color, tags, frequenze, tagDetails } = req.body;
+    const { lat, lng, descrizione, images, nome, color, tags, frequenze, tagDetails } = req.body;
+    const autore = req.user.username;
 
     let localita = null;
     try {
@@ -218,7 +219,7 @@ router.post(
         lng,
         descrizione || null,
         nome || null,
-        autore || null,
+        autore,
         color || null,
         tags ? JSON.stringify(tags) : null,
         localita,
@@ -262,16 +263,15 @@ router.put(
   authorizeRoles('admin', 'editor'),
   validateMarkerInput,
   (req, res, next) => {
-    const { lat, lng, descrizione, images, nome, autore, color, tags, frequenze, tagDetails } = req.body;
+    const { lat, lng, descrizione, images, nome, color, tags, frequenze, tagDetails } = req.body;
     const id = req.params.id;
     db.run(
-      'UPDATE markers SET lat = ?, lng = ?, descrizione = ?, nome = ?, autore = ?, color = ?, tag = ?, frequenze = ?, tag_details = ? WHERE id = ?',
+      'UPDATE markers SET lat = ?, lng = ?, descrizione = ?, nome = ?, color = ?, tag = ?, frequenze = ?, tag_details = ? WHERE id = ?',
       [
         lat,
         lng,
         descrizione || null,
         nome || null,
-        autore || null,
         color || null,
         tags ? JSON.stringify(tags) : null,
         frequenze || null,

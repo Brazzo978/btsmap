@@ -35,6 +35,20 @@ Applicazione web che consente agli utenti di segnalare la posizione di una BTS t
 - Impostare `UPLOADS_DIR` per specificare la cartella in cui salvare le immagini (di default `/opt/media`).
 - Impostare `DB_DIR` per specificare una cartella esterna in cui salvare il database SQLite (di default `/opt/database`).
 
+## Configurazione del client email
+
+Per inviare le email di registrazione e di recupero della password il backend usa [Nodemailer](https://nodemailer.com/) con un account Gmail.
+Prima di avviare il server è necessario impostare le credenziali SMTP attraverso le variabili d'ambiente:
+
+```bash
+export SMTP_USER="tuoaccount@gmail.com"
+export SMTP_PASS="tua-app-password"
+export ADMIN_EMAIL="indirizzo_admin@example.com"
+```
+
+`SMTP_USER` e `SMTP_PASS` devono contenere rispettivamente l'indirizzo e la password (o [Password per le app](https://support.google.com/accounts/answer/185833)) dell'account utilizzato per l'invio delle mail.
+`ADMIN_EMAIL` definisce l'indirizzo associato all'utente amministratore creato al primo avvio.
+
 
 ## Struttura del progetto
 

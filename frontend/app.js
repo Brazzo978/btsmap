@@ -422,11 +422,29 @@ if (markerTagContainer) {
 }
 
 function applyTagFilter() {
-  const selected = tagFilter
-    ? Array.from(tagFilter.selectedOptions)
-        .map((o) => o.value)
-        .filter(Boolean)
-    : [];
+  if (!tagFilter) return;
+
+  const options = Array.from(tagFilter.options);
+  let selectedValues = Array.from(tagFilter.selectedOptions).map(
+    (o) => o.value
+  );
+
+  if (
+    selectedValues.length === 0 ||
+    selectedValues.includes("") ||
+    selectedValues.length === options.length - 1
+  ) {
+    options.forEach((opt, idx) => (opt.selected = idx === 0));
+    selectedValues = [];
+  } else {
+    options[0].selected = false;
+  }
+
+  if (window.M && M.FormSelect) {
+    M.FormSelect.init(tagFilter, { dropdownOptions: { closeOnClick: false } });
+  }
+
+  const selected = selectedValues.filter(Boolean);
   Object.values(markersById).forEach(({ data, marker }) => {
     if (
       selected.length === 0 ||
@@ -487,6 +505,7 @@ document.getElementById('cancelModal').addEventListener('click', () => {
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
+  const token = localStorage.getItem('token');
   const id = document.getElementById('markerId').value;
   const selected = Array.from(
     document.querySelectorAll('#markerTags input[type="checkbox"]:checked')
@@ -521,11 +540,17 @@ form.addEventListener('submit', (e) => {
       ? currentEditMarker.images.slice()
       : [],
   };
+  const payload = token ? parseJwt(token) : null;
   if (id) {
     marker.id = Number(id);
     if (currentEditMarker && currentEditMarker.localita) {
       marker.localita = currentEditMarker.localita;
     }
+    if (currentEditMarker && currentEditMarker.autore) {
+      marker.autore = currentEditMarker.autore;
+    }
+  } else if (payload && payload.username) {
+    marker.autore = payload.username;
   }
   const files = document.getElementById('markerImages').files;
   if (marker.images.length + files.length > 10) {
@@ -538,7 +563,7 @@ form.addEventListener('submit', (e) => {
     method,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + localStorage.getItem('token'),
+      Authorization: 'Bearer ' + token,
     },
     body: JSON.stringify(marker),
   })
@@ -551,7 +576,6 @@ form.addEventListener('submit', (e) => {
     .then((data) => {
       marker.id = id ? Number(id) : data.id;
       marker.localita = data.localita || marker.localita || null;
-      const token = localStorage.getItem('token');
       const uploads = Array.from(files).map((file) => {
         const fd = new FormData();
         fd.append('image', file);
